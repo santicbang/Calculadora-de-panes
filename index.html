@@ -387,18 +387,23 @@ ZONES.forEach(z => {
 function calcZone(z) {
   let details = [];
   let totalComensales = 0;
+  let panesBase = 0;
   PAX_SIZES.forEach(p => {
     const n = state[z][p];
     if (n > 0) {
       const com = n * p;
-      const panes = Math.ceil(com / 4);
-      details.push({ pax: p, mesas: n, comensales: com, panes });
+      const panesPorMesa = Math.ceil(p / 4);
+      const panes = panesPorMesa * n;
+      details.push({ pax: p, mesas: n, comensales: com, panes, panesPorMesa });
       totalComensales += com;
+      panesBase += panes;
     }
   });
   const extraCom = state[z].extra || 0;
-  if (extraCom > 0) totalComensales += extraCom;
-  const panesBase = Math.ceil(totalComensales / 4);
+  if (extraCom > 0) {
+    totalComensales += extraCom;
+    panesBase += Math.ceil(extraCom / 4);
+  }
   const panesConMargen = Math.ceil(panesBase * 1.2 / 4) * 4;
   const extra = panesConMargen - panesBase;
   return { details, totalComensales, panesBase, panesConMargen, extra, extraCom };
